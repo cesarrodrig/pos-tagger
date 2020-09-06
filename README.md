@@ -47,3 +47,17 @@ sentences and each sentence's words are represented with the following fields:
 
 The goal is to train a model(s) to predict `UPOS` of each word in a sentence
 using the other fields as features.
+
+## Approach
+
+### Baseline Model
+
+As a first step, we implement a baseline model so that we can compare other
+models against it. This model works by counting the frequency that each tag
+appears for each word and, during prediction, returns the most frequent tag.
+If the word has not been seen before, it returns the noun tag.
+
+This model is the simples solution and it can achieve an accuracy of 90%
+[1](https://nlp.stanford.edu/fsnlp/) if trained with large datasets due to
+getting common words like `a` and `the` right a lot.
+Nevertheless, its performance is not great for unknown words at around 50%.

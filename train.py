@@ -4,11 +4,13 @@ provided as command-line arguments. For more details, see the function `cli`
 or run `python train.py --help`.
 """
 
+import os
 from typing import Any, Dict, List
 
 import click
 import conllu
-from sklearn import pipeline
+import joblib
+from sklearn import base, pipeline
 import yaml
 
 import baseline
@@ -44,6 +46,21 @@ def build_model_pipeline(model_config: ModelConfig) -> pipeline.Pipeline:
         raise TypeError(f"Model `{name}` not recognized.")
 
 
+def save_model(model: base.BaseEstimator,
+               config: ModelConfig,
+               acc: float,
+               val_acc: float) -> None:
+    model_name = config['name']
+    # Name scheme: modelname__param1:val1__param2:val2.joblib
+    params = [f"{p}:{v}" for p, v in config['params'].items()]
+    params += [f"acc:{acc:0.04f}__val_acc:{val_acc:0.04f}"]
+    model_name += "__" + "__".join(params)
+
+    filename = os.path.join(config['save_dir'], f"{model_name}.joblib")
+    joblib.dump(model, filename)
+    print("Saved model in:", filename)
+
+
 def train(train_data: List[conllu.TokenList],
           dev_data: List[conllu.TokenList],
           model_config: ModelConfig) -> None:
@@ -75,6 +92,8 @@ def train(train_data: List[conllu.TokenList],
     y_pred = model.predict(dev_data)
     accuracy_dev = metrics.accuracy(y_dev, y_pred)
     print("Model dev accuracy:", accuracy_dev)
+
+    save_model(model, model_config, accuracy_train, accuracy_dev)
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))

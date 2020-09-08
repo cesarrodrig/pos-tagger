@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 
 import conllu
 import numpy as np
-from sklearn import pipeline
+from sklearn import base, pipeline
 
 
 def build_pipeline(model_params: Dict[Any, Any]) -> pipeline.Pipeline:
@@ -59,7 +59,7 @@ class FeatureExtractor:
         return features
 
 
-class Model:
+class Model(base.BaseEstimator):
     """Model that uses tag frequency to predict a words tag.
 
     This model is used as a baseline to evaluate other models against.
@@ -83,8 +83,7 @@ class Model:
         # Using a dict and a counter is a little more intuitive and serves
         # the short-term purpose of building a baseline model.
         self._word_tag_counts = collections.defaultdict(
-            lambda: collections.Counter(),
-        )  # type: Dict[str, collections.Counter]
+            build_counter)  # type: Dict[str, collections.Counter]
 
     def fit(self, X: np.array, y: np.array) -> None:
         """Train the model to fit the sentences to the tags.
@@ -141,3 +140,8 @@ class Model:
             pred[i] = tags
 
         return pred
+
+
+def build_counter():
+    # Joblib/Pickle require this method to be public and not local.
+    return collections.Counter()

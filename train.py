@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 import click
 import conllu
-import dill
+import dill  # noqa: F401 This package is joblib.dump works with lambdas
 import joblib
 from sklearn import base, pipeline
 import yaml

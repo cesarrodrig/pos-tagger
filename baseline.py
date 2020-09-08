@@ -83,7 +83,8 @@ class Model(base.BaseEstimator):
         # Using a dict and a counter is a little more intuitive and serves
         # the short-term purpose of building a baseline model.
         self._word_tag_counts = collections.defaultdict(
-            build_counter)  # type: Dict[str, collections.Counter]
+            lambda: collections.Counter()
+        )  # type: Dict[str, collections.Counter]
 
     def fit(self, X: np.array, y: np.array) -> None:
         """Train the model to fit the sentences to the tags.
@@ -140,8 +141,3 @@ class Model(base.BaseEstimator):
             pred[i] = tags
 
         return pred
-
-
-def build_counter():
-    # Joblib/Pickle require this method to be public and not local.
-    return collections.Counter()

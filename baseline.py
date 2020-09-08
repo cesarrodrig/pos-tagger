@@ -3,14 +3,33 @@ This module contains the classes used to implement a baseline PoS tagger.
 """
 
 import collections
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import conllu
 import numpy as np
+from sklearn import pipeline
+
+
+def build_pipeline(model_params: Dict[Any, Any]) -> pipeline.Pipeline:
+    """Return a pipeline that can be used end-to-end with tokenized data.
+
+    Parameters
+    ----------
+    model_params : dict
+        Parameters that should be used to initialize the model.
+
+    Returns
+    -------
+    pipeline.Pipeline
+        Built pipeline that can be used as a model to fit and predict.
+    """
+    return pipeline.Pipeline([
+        ('feature_extractor', FeatureExtractor()),
+        ('model', Model(**model_params)),
+    ])
 
 
 class FeatureExtractor:
-
     """Class that converts tokenized sentences to the features needed by
     the baseline model.
     """

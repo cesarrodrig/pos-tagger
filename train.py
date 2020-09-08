@@ -5,6 +5,7 @@ or run `python train.py --help`.
 """
 
 import os
+import time
 from typing import Any, Dict, List
 
 import click
@@ -100,15 +101,24 @@ def train(train_data: List[conllu.TokenList],
 
     model = build_model_pipeline(model_config)
 
+    fit_start = time.time()
     model.fit(train_data, y_train)
+    fit_time = time.time() - fit_start
 
+    pred_start = time.time()
     y_pred = model.predict(train_data)
+    pred_time = time.time() - pred_start
+
     accuracy_train = metrics.accuracy(y_train, y_pred)
-    print("Model train accuracy:", accuracy_train)
 
     y_pred = model.predict(dev_data)
     accuracy_dev = metrics.accuracy(y_dev, y_pred)
+
+    print("Model train accuracy:", accuracy_train)
     print("Model dev accuracy:", accuracy_dev)
+
+    print(f"Training time: {fit_time:0.04f}s")
+    print(f"Prediction time: {pred_time:0.04f}s")
 
     save_model(model, model_config, accuracy_train, accuracy_dev)
 

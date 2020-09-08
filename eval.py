@@ -29,7 +29,10 @@ def eval(model: base.BaseEstimator, test_data: List[conllu.TokenList]) -> None:
 
     y_pred = model.predict(test_data)
     accuracy = metrics.accuracy(y_test, y_pred)
+    amb_accuracy = metrics.ambiguous_accuracy(test_data, y_test, y_pred)
+
     print("Model accuracy:", accuracy)
+    print("Model ambiguous words accuracy:", amb_accuracy)
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))

@@ -110,12 +110,25 @@ def train(train_data: List[conllu.TokenList],
     pred_time = time.time() - pred_start
 
     accuracy_train = metrics.accuracy(y_train, y_pred)
+    amb_accuracy_train = metrics.ambiguous_accuracy(train_data,
+                                                    y_train,
+                                                    y_pred)
 
     y_pred = model.predict(dev_data)
     accuracy_dev = metrics.accuracy(y_dev, y_pred)
+    amb_accuracy_dev = metrics.ambiguous_accuracy(dev_data, y_dev, y_pred)
+    unk_accuracy_dev = metrics.unknown_accuracy(train_data,
+                                                dev_data,
+                                                y_dev,
+                                                y_pred)
 
     print("Model train accuracy:", accuracy_train)
     print("Model dev accuracy:", accuracy_dev)
+
+    print("Model train ambiguous words accuracy:", amb_accuracy_train)
+    print("Model dev ambiguous words accuracy:", amb_accuracy_dev)
+
+    print("Model unknown words accuracy:", unk_accuracy_dev)
 
     print(f"Training time: {fit_time:0.04f}s")
     print(f"Prediction time: {pred_time:0.04f}s")

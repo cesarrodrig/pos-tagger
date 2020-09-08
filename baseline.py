@@ -2,12 +2,13 @@
 This module contains the classes used to implement a baseline PoS tagger.
 """
 
-import collections
 from typing import Any, Dict, List
 
 import conllu
 import numpy as np
 from sklearn import base, pipeline
+
+import utils
 
 
 def build_pipeline(model_params: Dict[Any, Any]) -> pipeline.Pipeline:
@@ -75,16 +76,9 @@ class Model(base.BaseEstimator):
         default_tag : str, optional
             Tag used when a word has not been seen before.
         """
-        self.default_tag = default_tag
 
         # Store each tag count for every word the model is trained on.
-        # I am not sure how much more efficient would be to have a fixed-sized
-        # array containing the counts of each tag instead of Counter.
-        # Using a dict and a counter is a little more intuitive and serves
-        # the short-term purpose of building a baseline model.
-        self._word_tag_counts = collections.defaultdict(
-            lambda: collections.Counter()
-        )  # type: Dict[str, collections.Counter]
+        self._word_tag_counter = utils.WordTagCounter(default_tag)
 
     def fit(self, X: np.array, y: np.array) -> None:
         """Train the model to fit the sentences to the tags.
@@ -101,10 +95,8 @@ class Model(base.BaseEstimator):
         """
         assert len(X) == len(y), "X and y must be the same length."
 
-        for i, sentence in enumerate(X):
-            for j, word in enumerate(sentence):
-                tag = y[i][j]
-                self._word_tag_counts[word].update([tag])
+        for sentence, tags in zip(X, y):
+            self._word_tag_counter.update(sentence, tags)
 
     def predict(self, X: np.array) -> np.array:
         """Predict the tags of the words.
@@ -125,18 +117,9 @@ class Model(base.BaseEstimator):
         """
         pred = np.zeros(len(X), dtype='object')
         for i, sentence in enumerate(X):
-            tags = []
-            for word in sentence:
-                counts = self._word_tag_counts[word]
-
-                # If the word has not been seen, use the default tag
-                if len(counts) == 0:
-                    tags.append(self.default_tag)
-                    continue
-
-                # Pick the tag with the highest count.
-                most_common = counts.most_common(1)[0][0]
-                tags.append(most_common)
+            tags = [
+                self._word_tag_counter.most_common_tag(w) for w in sentence
+            ]
 
             pred[i] = tags
 

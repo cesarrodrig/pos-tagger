@@ -1,0 +1,4 @@
+name: baseline
+params:
+  default_tag: 'NOUN'
+save_dir: models

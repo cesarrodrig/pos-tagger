@@ -1,7 +1,7 @@
 """
-This script evaluates a model using a training and development dataset
-provided as command-line arguments. For more details, see the function `cli`
-or run `python train.py --help`.
+This script evaluates a model using a dataset provided as command-line
+arguments. For more details, see the function `cli` or run
+`python eval.py --help`.
 """
 
 from typing import List

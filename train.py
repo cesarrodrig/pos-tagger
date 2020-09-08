@@ -8,7 +8,6 @@ from typing import List
 
 import click
 import conllu
-from sklearn import pipeline
 
 import baseline
 import feature_extraction
@@ -32,10 +31,7 @@ def train(train_data: List[conllu.TokenList],
     y_train = feature_extraction.extract_tags(train_data)
     y_dev = feature_extraction.extract_tags(dev_data)
 
-    model = pipeline.Pipeline([
-        ('feature_extractor', baseline.FeatureExtractor()),
-        ('model', baseline.Model()),
-    ])
+    model = baseline.build_pipeline(model_params={})
 
     model.fit(train_data, y_train)
 

@@ -9,4 +9,4 @@ install:
 script:
   - ./build.sh
 env:
-  - TRAIN_FILENAME="en_gum-ud-train.conllu" DEV_FILENAME="en_gum-ud-dev.conllu" TEST_FILENAME="en_gum-ud-test.conllu"
+  - TRAIN_FILENAME="en_gum-ud-train.conllu" DEV_FILENAME="en_gum-ud-dev.conllu" TEST_FILENAME="en_gum-ud-test.conllu" TEXT_FILENAME="unlabeled.txt"

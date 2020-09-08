@@ -54,6 +54,19 @@ def save_model(model: base.BaseEstimator,
                config: ModelConfig,
                acc: float,
                val_acc: float) -> None:
+    """Persist a model using joblib.
+
+    Parameters
+    ----------
+    model : base.BaseEstimator
+        Model to save.
+    config : ModelConfig
+        Configuration used to build the model.
+    acc : float
+        Training accuracy.
+    val_acc : float
+        Validation accuracy.
+    """
     model_name = config['name']
     # Name scheme: modelname__param1:val1__param2:val2.joblib
     params = [f"{p}:{v}" for p, v in config['params'].items()]

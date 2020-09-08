@@ -1,0 +1,7 @@
+This is a tokenized sentence .
+I am assuming that they are space-separated and even symbols like . and , are also space-separated
+HMM does well with short sequences
+But when it tries to tag long sentences , it starts to struggle because the probabilities start going to zero and no possible path is found
+However , it is not enough to have attained such native-like levels .
+Claire Bailey-Ross claire.bailey-ross@port.ac.uk University of Portsmouth , United Kingdom
+The viewing experience of art is a complex one , involving issues of perception , attention , memory , decision-making , affect , and emotion .

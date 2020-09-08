@@ -1,0 +1,3 @@
+name: hmm_nltk
+params: {} #empty
+save_dir: models

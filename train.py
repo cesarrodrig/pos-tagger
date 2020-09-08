@@ -9,12 +9,14 @@ from typing import Any, Dict, List
 
 import click
 import conllu
+import dill
 import joblib
 from sklearn import base, pipeline
 import yaml
 
 import baseline
 import feature_extraction
+import hmm
 import metrics
 
 ModelConfig = Dict[str, Any]
@@ -42,6 +44,8 @@ def build_model_pipeline(model_config: ModelConfig) -> pipeline.Pipeline:
     name = model_config['name']
     if name == 'baseline':
         return baseline.build_pipeline(model_config['params'])
+    if name == 'hmm_nltk':
+        return hmm.build_nltk_pipeline(model_config['params'])
     else:
         raise TypeError(f"Model `{name}` not recognized.")
 

@@ -7,10 +7,11 @@ unlabeled dataset. For more details, see the function `cli` or run
 from typing import List
 
 import click
-import joblib
 import nltk
 from nltk import stem
 from sklearn import base
+
+import utils
 
 nltk.download('wordnet')
 
@@ -52,7 +53,7 @@ def cli(text_filename: str, model_filename: str) -> None:
     with open(text_filename, 'r') as f:
         unlabeled_data = f.readlines()
 
-    model = joblib.load(model_filename)
+    model = utils.load_model(model_filename)
 
     # Convert to a list of lists of words.
     sentences: List[List[str]] = []

@@ -8,11 +8,11 @@ from typing import List
 
 import click
 import conllu
-import joblib
 from sklearn import base
 
 import feature_extraction
 import metrics
+import utils
 
 
 def eval(model: base.BaseEstimator, test_data: List[conllu.TokenList]) -> None:
@@ -44,7 +44,7 @@ def cli(test_filename: str, model_filename: str) -> None:
     with open(test_filename, 'r') as f:
         test_data = conllu.parse(f.read())
 
-    model = joblib.load(model_filename)
+    model = utils.load_model(model_filename)
     eval(model, test_data)
 
 

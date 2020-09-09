@@ -1,5 +1,27 @@
+"""
+This module contains common-purpose classes and functions.
+"""
 import collections
 from typing import Dict, List
+
+import joblib
+from sklearn import pipeline
+
+
+def load_model(filepath: str) -> pipeline.Pipeline:
+    """Load a model from a file or directory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path-like string.
+
+    Returns
+    -------
+    pipeline.Pipeline
+        Loaded model pipeline.
+    """
+    return joblib.load(filepath)
 
 
 class WordTagCounter:

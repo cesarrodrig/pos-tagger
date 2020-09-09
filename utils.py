@@ -5,6 +5,8 @@ import collections
 from typing import Dict, List
 
 import joblib
+from keras.preprocessing import sequence
+import numpy as np
 from sklearn import pipeline
 
 
@@ -103,3 +105,76 @@ class WordTagCounter:
             return True
 
         return len(self._word_tag_counts[word]) > 1
+
+
+class WordTokenizer:
+    """Fits a vocabulary of words and maps them into indices as entries to a
+    dictionary.
+
+    The tokenizers provided in `sklearn` and `keras` all remove punctuation
+    so this tokenizer solves this problem to provide us with a word to index
+    mapping and its inverse index as well.
+    """
+
+    def __init__(self, unknown_token="") -> None:
+        # Whenever an unseen token needs to be inversed, we return this.
+        self.unknown_token = unknown_token
+
+        # We keep mappings for word -> index and index -> word.
+        self._index: Dict[str, int] = dict()
+        self._inverse_index: Dict[int, str] = dict()
+
+    def fit(self, words: List[str]) -> 'WordTokenizer':
+
+        # Allows us to later to multi-index below.
+        words = np.array(words)
+
+        # idx contains the indices of unique words.
+        # inv is an array of indices representing each word.
+        self.vocabulary, idx, inv = np.unique(
+            words, return_index=True, return_inverse=True)
+
+        # We add two tokens, padding and out-of-vocab
+        inv += 2
+        oov_token = 1
+
+        self._index = collections.defaultdict(lambda: oov_token,
+                                              zip(words[idx], inv[idx]))
+        self._inverse_index = collections.defaultdict(
+            lambda: self.unknown_token, zip(inv[idx], words[idx]))
+
+        return self
+
+    def transform(self, words: List[str]) -> np.array:
+        return np.array([self._index[w] for w in words])
+
+    def inverse_transform(self, X: np.array) -> np.array:
+        return np.array([self._inverse_index[i] for i in X])
+
+
+class Sequencer:
+    """Class that tokenizes sequences to categories and pads them to be
+    the same length.
+    """
+
+    def __init__(self) -> None:
+        self._word_tokenizer = WordTokenizer()
+
+    def fit(self, sentences: List[List[str]]) -> 'Sequencer':
+        words = [w for s in sentences for w in s]
+        self._word_tokenizer.fit(words)
+
+        # Save the length of the longest sentence for padding later.
+        self._max_len = len(max(sentences, key=len))
+        return self
+
+    def transform(self, sentences: List[List[str]]) -> np.array:
+
+        sentences = [self._word_tokenizer.transform(s) for s in sentences]
+        sentences = sequence.pad_sequences(sentences,
+                                           maxlen=self._max_len,
+                                           padding='post')
+        return sentences
+
+    def inverse_transform(self, sequences: np.array) -> List[List[str]]:
+        return [self._word_tokenizer.inverse_transform(s) for s in sequences]

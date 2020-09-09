@@ -18,9 +18,13 @@ import yaml
 import baseline
 import feature_extraction
 import hmm
+import lstm
 import metrics
 
 ModelConfig = Dict[str, Any]
+
+# These strings are ignored when creating a model filename.
+IGNORE_PARAM_NAMES = {'weights_filename', 'checkpoint_basepath'}
 
 
 def build_model_pipeline(model_config: ModelConfig) -> pipeline.Pipeline:
@@ -47,6 +51,8 @@ def build_model_pipeline(model_config: ModelConfig) -> pipeline.Pipeline:
         return baseline.build_pipeline(model_config['params'])
     if name == 'hmm_nltk':
         return hmm.build_nltk_pipeline(model_config['params'])
+    if name == 'lstm':
+        return lstm.build_pipeline(model_config['params'])
     else:
         raise TypeError(f"Model `{name}` not recognized.")
 
@@ -69,10 +75,23 @@ def save_model(model: base.BaseEstimator,
         Validation accuracy.
     """
     model_name = config['name']
+    filtered_params = [(p, v) for p,
+                       v in config['params'].items()
+                       if p not in IGNORE_PARAM_NAMES]
+
     # Name scheme: modelname__param1:val1__param2:val2.joblib
-    params = [f"{p}:{v}" for p, v in config['params'].items()]
+    params = [f"{p}:{v}" for p, v in filtered_params]
     params += [f"acc:{acc:0.04f}__val_acc:{val_acc:0.04f}"]
     model_name += "__" + "__".join(params)
+
+    # Again, the LSTM model needs further rework so we don't have to be
+    # taking care of these special cases. Probably a wrapper class Model
+    # with a method 'save' that can be overloaded accordingly.
+    if config['name'] == 'lstm':
+        # Saves the model architecture only.
+        save_dir = os.path.join(config['save_dir'], model_name)
+        model.save(save_dir)
+        return
 
     filename = os.path.join(config['save_dir'], f"{model_name}.joblib")
     joblib.dump(model, filename)
@@ -102,7 +121,14 @@ def train(train_data: List[conllu.TokenList],
     model = build_model_pipeline(model_config)
 
     fit_start = time.time()
-    model.fit(train_data, y_train)
+
+    # Leaky abstraction here, ideally the trainer should not care what kind
+    # of model it is training. This is an area of improvement.
+    if model_config['name'] == 'lstm':
+        model.fit(train_data, y_train, validation_data=(dev_data, y_dev))
+    else:
+        model.fit(train_data, y_train)
+
     fit_time = time.time() - fit_start
 
     pred_start = time.time()

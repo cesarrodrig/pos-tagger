@@ -1,6 +1,7 @@
 """
 This module contains common-purpose classes and functions.
 """
+import os
 import collections
 from typing import Dict, List
 
@@ -8,6 +9,8 @@ import joblib
 from keras.preprocessing import sequence
 import numpy as np
 from sklearn import pipeline
+
+import lstm
 
 
 def load_model(filepath: str) -> pipeline.Pipeline:
@@ -23,6 +26,11 @@ def load_model(filepath: str) -> pipeline.Pipeline:
     pipeline.Pipeline
         Loaded model pipeline.
     """
+
+    # REFACTOR: Very hacky and should be reworked into passing a model name.
+    if os.path.isdir(filepath):
+        return lstm.load_model_pipeline(filepath)
+
     return joblib.load(filepath)
 
 

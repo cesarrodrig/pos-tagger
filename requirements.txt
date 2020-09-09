@@ -1,7 +1,9 @@
 click==7.1.2
 conllu==4.1
 dill==0.3.2
+Keras==2.4.3
 nltk==3.5
 numpy==1.19.1
 scikit-learn==0.23.2
+tensorflow==2.2.0
 PyYAML==5.3.1

@@ -33,9 +33,9 @@ def generate(model: base.BaseEstimator, sentences: List[List[str]]) -> None:
         # Convert to the lemmatized versions
         lemmatized = [lemmatizer.lemmatize(w.lower()) for w in sentence]
 
-        # Getting the model directly so we don't have to deal with the
-        # feature extractor that expects a list of `conllu.Sentence`.
-        tags = model.named_steps['model'].predict([lemmatized])
+        # Convert to conllu.TokenList because models expect that.
+        # Since they are essentially dicts, we build them that way.
+        tags = model.predict([[{'lemma': w} for w in lemmatized]])
 
         print("Word\tTag")
         for w, t in zip(sentence, tags[0]):

@@ -1,0 +1,6 @@
+name: lstm
+params:
+  epochs: 100
+  lstm_units: 128
+  batch_size: 4
+save_dir: models

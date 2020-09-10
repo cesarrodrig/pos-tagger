@@ -41,6 +41,11 @@ To run all the previous steps for the three models implemented (except
 LSTM training):
 
 ```
+export TRAIN_FILENAME="en_gum-ud-train.conllu"
+export DEV_FILENAME="en_gum-ud-dev.conllu"
+export TEST_FILENAME="en_gum-ud-test.conllu"
+export TEXT_FILENAME="unlabeled.txt"
+
 ./build.sh
 ```
 
@@ -224,14 +229,12 @@ the sequence modeling powers of LSTMs as well as the meaning inference
 of word embeddings. Performance may even be improved if a hyperparameter
 search was done.
 
-### Conclusions
-
 The baseline model helped us establish a performance that determines if a
 model is useful or not as a PoS tagger. The HMM proved not useful by this
 criteria while the LSTM proved to be a viable solution for this dataset.
 
-The speed of the baseline model may be attractive to use it as a real-time
-model and then use LSTM as a more accurate but slow background tagger.
+The speed of the baseline model may be attractive as a real-time model due
+to its speed and the LSTM as a more accurate but slow background tagger.
 
 ## Potential Improvements
 

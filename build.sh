@@ -18,3 +18,8 @@ echo "=== Evaluating NLTK HMM ==="
 python eval.py $TEST_FILENAME models/hmm_nltk__*.joblib
 echo "=== Tagging with NLTK HMM ==="
 python generate.py $TEXT_FILENAME models/hmm_nltk__*.joblib > tags_hmm_nltk.txt
+echo ""
+echo "=== Evaluating LSTM ==="
+python eval.py $TEST_FILENAME models/lstm__*
+echo "=== Tagging with LSTM ==="
+python generate.py $TEXT_FILENAME models/lstm__* > tags_lstm.txt

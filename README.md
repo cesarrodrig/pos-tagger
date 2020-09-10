@@ -5,6 +5,9 @@ The exercise consists of building a Part-Of-Speech (PoS) tagger trained on the
 Universal Dependencies syntax annotations from
 [here](https://github.com/UniversalDependencies/UD_English-GUM/tree/master).
 
+Three models are trained and tested as taggers with this dataset:
+naive/baseline, HMM, and LSTM.
+
 ## Instructions
 
 To download the datasets:

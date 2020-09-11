@@ -7,6 +7,12 @@ Universal Dependencies syntax annotations from
 
 ## Instructions
 
+To install the dependencies:
+
+```
+pip install -r requirements.txt
+```
+
 To download the datasets:
 
 ```

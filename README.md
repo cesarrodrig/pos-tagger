@@ -186,15 +186,15 @@ punctuation like `.,?!`.
 * train accuracy: 95.80%
 * train ambiguous words accuracy: 91.08%
 
-* dev accuracy: 39.74%
-* dev ambiguous words accuracy: 40.31%
-* unknown words accuracy: 42.73%
+* dev accuracy: 77.20%
+* dev ambiguous words accuracy: 67.22%
+* unknown words accuracy: 84.48%
 
-* test accuracy: 37.16%
-* test ambiguous words accuracy: 38.22%
+* test accuracy: 75.15%
+* test ambiguous words accuracy: 73.91%
 
-* training time: 0.6307s
-* prediction time: 23.6655s
+* training time: 0.3161s
+* prediction time: 42.5647s
 
 ### Bidirectional LSTM
 

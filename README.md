@@ -166,50 +166,17 @@ punctuation like `.,?!`.
 
 ## Results
 
-### Baseline Model
-
-* train accuracy: 93.31%
-* train ambiguous words accuracy: 85.76%
-
-* dev accuracy: 86.12%
-* dev ambiguous words accuracy: 80.95%
-* unknown words accuracy: 92.05%
-
-* test accuracy: 85.04%
-* test ambiguous words accuracy: 78.42%
-
-* training time: 0.1723s
-* prediction time: 0.1966s
-
-### HMM from NLTK
-
-* train accuracy: 95.80%
-* train ambiguous words accuracy: 91.08%
-
-* dev accuracy: 77.20%
-* dev ambiguous words accuracy: 67.22%
-* unknown words accuracy: 84.48%
-
-* test accuracy: 75.15%
-* test ambiguous words accuracy: 73.91%
-
-* training time: 0.3161s
-* prediction time: 42.5647s
-
-### Bidirectional LSTM
-
-* train accuracy: 97.56%
-* train ambiguous words accuracy: 95.52%
-
-* dev accuracy: 89.72%
-* dev ambiguous words accuracy: 87.36%
-* unknown words accuracy: 93.90%
-
-* test accuracy: 88.87%
-* test ambiguous words accuracy: 87.01%
-
-* training time: 1176.5011s
-* prediction time: 6.1222s
+|       							| Baseline |  HMM   |  LSTM  |
+|:----------------------------------|---------:|-------:|-------:|
+| train accuracy        		   	| 93.31%   | 95.80% | 97.56% |
+| train ambiguous words accuracy 	| 85.76%   | 91.08% | 95.52% |
+| dev accuracy 						| 86.12%   | 77.20% | 89.72% |
+| dev ambiguous words accuracy 		| 80.95%   | 67.22% | 87.36% |
+| dev unknown words accuracy 		| 92.05%   | 84.48% | 93.90% |
+| test accuracy 					| 85.04%   | 75.15% | 88.87% |
+| test ambiguous words accuracy 	| 78.42%   | 73.91% | 87.01% |
+| training time 					| 0.1723s  | 0.31s  | 1176s  |
+| prediction time 					| 0.1966s  | 42.56s | 6.12s  |
 
 ### Discussion
 

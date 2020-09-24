@@ -92,4 +92,4 @@ class NLTKModel(base.BaseEstimator):
         list
             List of lists of strings with the predicted tags.
         """
-        return [self._model.best_path(sentence) for sentence in X]
+        return [self._model.best_path_simple(sentence) for sentence in X]

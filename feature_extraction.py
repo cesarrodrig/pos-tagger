@@ -22,20 +22,19 @@ def extract_tags(sentences: List[conllu.TokenList]) -> np.array:
     np.array
         Array of lists of strings containing the tags of the words.
     """
-    labels = np.zeros(len(sentences), dtype='object')
+    labels = np.zeros(len(sentences), dtype="object")
     for i, sentence in enumerate(sentences):
-        labels[i] = [word['upos'] for word in sentence]
+        labels[i] = [word["upos"] for word in sentence]
 
     return labels
 
 
 class LemmaExtractor:
-    """Class that extracts the lemmatized words from the sentences.
-    """
+    """Class that extracts the lemmatized words from the sentences."""
 
-    def fit(self,
-            sentences: List[conllu.TokenList],
-            y: np.array = None) -> 'LemmaExtractor':
+    def fit(
+        self, sentences: List[conllu.TokenList], y: np.array = None
+    ) -> "LemmaExtractor":
         return self
 
     def transform(self, sentences: List[conllu.TokenList]) -> np.array:
@@ -51,8 +50,8 @@ class LemmaExtractor:
         np.array
             Array of lists of strings containing the words of the sentences.
         """
-        features = np.zeros(len(sentences), dtype='object')
+        features = np.zeros(len(sentences), dtype="object")
         for i, sentence in enumerate(sentences):
-            features[i] = [word['lemma'] for word in sentence]
+            features[i] = [word["lemma"] for word in sentence]
 
         return features

@@ -30,9 +30,9 @@ def accuracy(y_true: np.array, y_pred: np.array) -> float:
     return metrics.accuracy_score(y_true, y_pred)
 
 
-def ambiguous_accuracy(sentences: List[conllu.TokenList],
-                       y_true: np.array,
-                       y_pred: np.array) -> float:
+def ambiguous_accuracy(
+    sentences: List[conllu.TokenList], y_true: np.array, y_pred: np.array
+) -> float:
     """Calculate the accuracy for words that have more than one tag.
 
     Parameters
@@ -50,8 +50,7 @@ def ambiguous_accuracy(sentences: List[conllu.TokenList],
         Accuracy score.
     """
     # Flatten them and convert to np for easier indexing.
-    words = np.array(
-        [word['lemma'] for sentence in sentences for word in sentence])
+    words = np.array([word["lemma"] for sentence in sentences for word in sentence])
     y_true = np.array([tag for sentence in y_true for tag in sentence])
     y_pred = np.array([tag for sentence in y_pred for tag in sentence])
 
@@ -68,10 +67,12 @@ def ambiguous_accuracy(sentences: List[conllu.TokenList],
     return metrics.accuracy_score(ambiguous_true, ambiguous_pred)
 
 
-def unknown_accuracy(train_data: List[conllu.TokenList],
-                     test_data: List[conllu.TokenList],
-                     y_true: np.array,
-                     y_pred: np.array) -> float:
+def unknown_accuracy(
+    train_data: List[conllu.TokenList],
+    test_data: List[conllu.TokenList],
+    y_true: np.array,
+    y_pred: np.array,
+) -> float:
     """Calculate the accuracy for words that are not in the training data.
 
     Parameters
@@ -91,9 +92,11 @@ def unknown_accuracy(train_data: List[conllu.TokenList],
         Accuracy score.
     """
     train_words = np.array(
-        [word['lemma'] for sentence in train_data for word in sentence])
+        [word["lemma"] for sentence in train_data for word in sentence]
+    )
     test_words = np.array(
-        [word['lemma'] for sentence in test_data for word in sentence])
+        [word["lemma"] for sentence in test_data for word in sentence]
+    )
     y_true = np.array([tag for sentence in y_true for tag in sentence])
     y_pred = np.array([tag for sentence in y_pred for tag in sentence])
 

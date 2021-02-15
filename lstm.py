@@ -16,7 +16,7 @@ import feature_extraction
 import utils
 
 
-def build_pipeline(model_params: Dict[Any, Any]) -> 'ModelPipeline':
+def build_pipeline(model_params: Dict[Any, Any]) -> "ModelPipeline":
     """Return a pipeline that can be used end-to-end with tokenized data.
 
     Parameters
@@ -32,7 +32,7 @@ def build_pipeline(model_params: Dict[Any, Any]) -> 'ModelPipeline':
     return ModelPipeline(model_params)
 
 
-def load_model_pipeline(path: str) -> 'ModelPipeline':
+def load_model_pipeline(path: str) -> "ModelPipeline":
     """Load the model from a directory.
 
     The directory should contain the following files:
@@ -52,17 +52,17 @@ def load_model_pipeline(path: str) -> 'ModelPipeline':
     pipeline.Pipeline
         Loaded ModelPipeline
     """
-    filename = os.path.join(path, 'model.json')
-    with open(filename, 'r') as f:
+    filename = os.path.join(path, "model.json")
+    with open(filename, "r") as f:
         model = models.model_from_json(f.read())
 
-    filename = os.path.join(path, 'weights.h5')
+    filename = os.path.join(path, "weights.h5")
     model.load_weights(filename)
 
-    filename = os.path.join(path, 'sentence_pipe.joblib')
+    filename = os.path.join(path, "sentence_pipe.joblib")
     sentence_pipe = joblib.load(filename)
 
-    filename = os.path.join(path, 'tag_pipe.joblib')
+    filename = os.path.join(path, "tag_pipe.joblib")
     tag_pipe = joblib.load(filename)
 
     model_pipe = ModelPipeline()
@@ -73,11 +73,13 @@ def load_model_pipeline(path: str) -> 'ModelPipeline':
     return model_pipe
 
 
-def build_model(seq_length: int,
-                num_words: int,
-                num_tags: int,
-                units: int,
-                embedding_units: int = 128) -> models.Model:
+def build_model(
+    seq_length: int,
+    num_words: int,
+    num_tags: int,
+    units: int,
+    embedding_units: int = 128,
+) -> models.Model:
     """Build a Bidirectional LSTM that tags sequences using word embeddings.
 
     The architecture is as follows:
@@ -109,14 +111,13 @@ def build_model(seq_length: int,
     models.Model
         Keras Model.
     """
-    inputs = layers.Input(shape=(seq_length, ), dtype='int32')
+    inputs = layers.Input(shape=(seq_length,), dtype="int32")
 
     # +1 for out-of-vocabulary
-    X = layers.Embedding(num_words + 1, embedding_units,
-                         trainable=True)(inputs)
+    X = layers.Embedding(num_words + 1, embedding_units, trainable=True)(inputs)
     X = layers.Bidirectional(layers.LSTM(units, return_sequences=True))(X)
     X = layers.TimeDistributed(layers.Dense(num_tags))(X)
-    X = layers.Activation('softmax')(X)
+    X = layers.Activation("softmax")(X)
 
     return models.Model(inputs=inputs, outputs=X)
 
@@ -142,10 +143,12 @@ class ModelPipeline:
         self.sentence_pipe = SentencePipeline()
         self.tag_pipe = TagPipeline()
 
-    def fit(self,
-            sentences: List[conllu.TokenList],
-            tags: List[List[str]],
-            validation_data: Tuple[Any, Any] = None) -> None:
+    def fit(
+        self,
+        sentences: List[conllu.TokenList],
+        tags: List[List[str]],
+        validation_data: Tuple[Any, Any] = None,
+    ) -> None:
         """Fit the model.
 
         Parameters
@@ -171,31 +174,35 @@ class ModelPipeline:
         num_tags = y.shape[-1]
         num_sentences, seq_len = X.shape
 
-        lstm_units = self.params['lstm_units']
-        self.model = build_model(seq_length=seq_len,
-                                 num_words=num_words,
-                                 num_tags=num_tags,
-                                 units=lstm_units)
-        self.model.compile(loss='categorical_crossentropy',
-                           optimizer=optimizers.Adam(0.01),
-                           metrics=['accuracy', non_pad_accuracy()])
+        lstm_units = self.params["lstm_units"]
+        self.model = build_model(
+            seq_length=seq_len, num_words=num_words, num_tags=num_tags, units=lstm_units
+        )
+        self.model.compile(
+            loss="categorical_crossentropy",
+            optimizer=optimizers.Adam(0.01),
+            metrics=["accuracy", non_pad_accuracy()],
+        )
 
         early_stopping = callbacks.EarlyStopping(
-            monitor='val_ignore_pad_accuracy',
+            monitor="val_ignore_pad_accuracy",
             min_delta=0,
             patience=5,
             verbose=0,
-            mode='auto',
-            restore_best_weights=True)
+            mode="auto",
+            restore_best_weights=True,
+        )
 
-        batch_size = self.params['batch_size']
-        epochs = self.params['epochs']
-        self.model.fit(x=X,
-                       y=y,
-                       validation_data=validation_data,
-                       callbacks=[early_stopping],
-                       batch_size=batch_size,
-                       epochs=epochs)
+        batch_size = self.params["batch_size"]
+        epochs = self.params["epochs"]
+        self.model.fit(
+            x=X,
+            y=y,
+            validation_data=validation_data,
+            callbacks=[early_stopping],
+            batch_size=batch_size,
+            epochs=epochs,
+        )
 
     def predict(self, sentences: List[conllu.TokenList]) -> List[List[str]]:
         """Label the sentences with their PoS tags.
@@ -223,7 +230,7 @@ class ModelPipeline:
         unpadded = []
 
         for sentence, tags in zip(sentences, y_pred):
-            unpadded.append(tags[:len(sentence)])
+            unpadded.append(tags[: len(sentence)])
 
         return unpadded
 
@@ -268,7 +275,7 @@ class SentencePipeline:
         self.lemma_extractor = feature_extraction.LemmaExtractor()
         self.sequencer = utils.Sequencer()
 
-    def fit(self, sentences: List[conllu.TokenList]) -> 'SentencePipeline':
+    def fit(self, sentences: List[conllu.TokenList]) -> "SentencePipeline":
         s = self.lemma_extractor.fit(sentences).transform(sentences)
         self.sequencer.fit(s)
         return self
@@ -286,7 +293,7 @@ class TagPipeline:
     def __init__(self) -> None:
         self.sequencer = utils.Sequencer()
 
-    def fit(self, tags: List[List[str]]) -> 'TagPipeline':
+    def fit(self, tags: List[List[str]]) -> "TagPipeline":
         self.sequencer.fit(tags)
         return self
 
@@ -335,9 +342,8 @@ def non_pad_accuracy(pad_tag: int = 0) -> Callable:
         y_true_class = K.argmax(y_true, axis=-1)
         y_pred_class = K.argmax(y_pred, axis=-1)
 
-        ignore_mask = K.cast(K.not_equal(y_pred_class, pad_tag), 'int32')
-        matches = K.cast(K.equal(y_true_class, y_pred_class),
-                         'int32') * ignore_mask
+        ignore_mask = K.cast(K.not_equal(y_pred_class, pad_tag), "int32")
+        matches = K.cast(K.equal(y_true_class, y_pred_class), "int32") * ignore_mask
         accuracy = K.sum(matches) / K.maximum(K.sum(ignore_mask), 1)
         return accuracy
 

@@ -9,10 +9,10 @@ import click
 import wget
 
 
-@click.command(context_settings=dict(help_option_names=['-h', '--help']))
-@click.argument('train_filename')
-@click.argument('dev_filename')
-@click.argument('test_filename')
+@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.argument("train_filename")
+@click.argument("dev_filename")
+@click.argument("test_filename")
 def download(
     train_filename: str,
     dev_filename: str,

@@ -13,7 +13,7 @@ from sklearn import base
 
 import utils
 
-nltk.download('wordnet')
+nltk.download("wordnet")
 
 
 def generate(model: base.BaseEstimator, sentences: List[List[str]]) -> None:
@@ -36,7 +36,7 @@ def generate(model: base.BaseEstimator, sentences: List[List[str]]) -> None:
 
         # Convert to conllu.TokenList because models expect that.
         # Since they are essentially dicts, we build them that way.
-        tags = model.predict([[{'lemma': w} for w in lemmatized]])
+        tags = model.predict([[{"lemma": w} for w in lemmatized]])
 
         print("Word\tTag")
         for w, t in zip(sentence, tags[0]):
@@ -44,13 +44,12 @@ def generate(model: base.BaseEstimator, sentences: List[List[str]]) -> None:
         print()
 
 
-@click.command(context_settings=dict(help_option_names=['-h', '--help']))
-@click.argument('text_filename')
-@click.argument('model_filename')
+@click.command(context_settings=dict(help_option_names=["-h", "--help"]))
+@click.argument("text_filename")
+@click.argument("model_filename")
 def cli(text_filename: str, model_filename: str) -> None:
-    """Evaluates the performance of a model with the given dataset.
-    """
-    with open(text_filename, 'r') as f:
+    """Evaluates the performance of a model with the given dataset."""
+    with open(text_filename, "r") as f:
         unlabeled_data = f.readlines()
 
     model = utils.load_model(model_filename)
@@ -58,11 +57,11 @@ def cli(text_filename: str, model_filename: str) -> None:
     # Convert to a list of lists of words.
     sentences: List[List[str]] = []
     for i in range(len(unlabeled_data)):
-        sentence = [w for w in unlabeled_data[i].strip().split(' ')]
+        sentence = [w for w in unlabeled_data[i].strip().split(" ")]
         sentences.append(sentence)
 
     generate(model, sentences)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

@@ -22,19 +22,19 @@ def build_nltk_pipeline(model_params: Dict[str, Any]) -> pipeline.Pipeline:
     pipeline.Pipeline
         Built pipeline that acts as the model.
     """
-    return pipeline.Pipeline([
-        ('feature_extractor', TokenExtractor()),
-        ('model', NLTKModel(**model_params)),
-    ])
+    return pipeline.Pipeline(
+        [
+            ("feature_extractor", TokenExtractor()),
+            ("model", NLTKModel(**model_params)),
+        ]
+    )
 
 
 class TokenExtractor:
-
-    def fit(self,
-            sentences: List[conllu.TokenList],
-            y: np.array = None) -> 'TokenExtractor':
-        """Noop.
-        """
+    def fit(
+        self, sentences: List[conllu.TokenList], y: np.array = None
+    ) -> "TokenExtractor":
+        """Noop."""
         return self
 
     def transform(self, sentences: List[conllu.TokenList]) -> List[List[str]]:
@@ -52,12 +52,11 @@ class TokenExtractor:
         """
         train_data = []
         for sentence in sentences:
-            train_data.append([t['lemma'] for t in sentence])
+            train_data.append([t["lemma"] for t in sentence])
         return train_data
 
 
 class NLTKModel(base.BaseEstimator):
-
     def fit(self, X: List[List[str]], y: np.array) -> None:
         """Train the model.
 

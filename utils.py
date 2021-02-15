@@ -35,8 +35,7 @@ def load_model(filepath: str) -> pipeline.Pipeline:
 
 
 class WordTagCounter:
-
-    def __init__(self, default_tag: str = '') -> None:
+    def __init__(self, default_tag: str = "") -> None:
         """Constructor
 
         Parameters
@@ -132,7 +131,7 @@ class WordTokenizer:
         self._index: Dict[str, int] = dict()
         self._inverse_index: Dict[int, str] = dict()
 
-    def fit(self, words: List[str]) -> 'WordTokenizer':
+    def fit(self, words: List[str]) -> "WordTokenizer":
 
         # Allows us to later to multi-index below.
         words = np.array(words)
@@ -140,16 +139,19 @@ class WordTokenizer:
         # idx contains the indices of unique words.
         # inv is an array of indices representing each word.
         self.vocabulary, idx, inv = np.unique(
-            words, return_index=True, return_inverse=True)
+            words, return_index=True, return_inverse=True
+        )
 
         # We add two tokens, padding and out-of-vocab
         inv += 2
         oov_token = 1
 
-        self._index = collections.defaultdict(lambda: oov_token,
-                                              zip(words[idx], inv[idx]))
+        self._index = collections.defaultdict(
+            lambda: oov_token, zip(words[idx], inv[idx])
+        )
         self._inverse_index = collections.defaultdict(
-            lambda: self.unknown_token, zip(inv[idx], words[idx]))
+            lambda: self.unknown_token, zip(inv[idx], words[idx])
+        )
 
         return self
 
@@ -168,7 +170,7 @@ class Sequencer:
     def __init__(self) -> None:
         self._word_tokenizer = WordTokenizer()
 
-    def fit(self, sentences: List[List[str]]) -> 'Sequencer':
+    def fit(self, sentences: List[List[str]]) -> "Sequencer":
         words = [w for s in sentences for w in s]
         self._word_tokenizer.fit(words)
 
@@ -179,9 +181,9 @@ class Sequencer:
     def transform(self, sentences: List[List[str]]) -> np.array:
 
         sentences = [self._word_tokenizer.transform(s) for s in sentences]
-        sentences = sequence.pad_sequences(sentences,
-                                           maxlen=self._max_len,
-                                           padding='post')
+        sentences = sequence.pad_sequences(
+            sentences, maxlen=self._max_len, padding="post"
+        )
         return sentences
 
     def inverse_transform(self, sequences: np.array) -> List[List[str]]:

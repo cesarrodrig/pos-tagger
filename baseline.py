@@ -24,10 +24,12 @@ def build_pipeline(model_params: Dict[Any, Any]) -> pipeline.Pipeline:
     pipeline.Pipeline
         Built pipeline that can be used as a model to fit and predict.
     """
-    return pipeline.Pipeline([
-        ('feature_extractor', FeatureExtractor()),
-        ('model', Model(**model_params)),
-    ])
+    return pipeline.Pipeline(
+        [
+            ("feature_extractor", FeatureExtractor()),
+            ("model", Model(**model_params)),
+        ]
+    )
 
 
 class FeatureExtractor:
@@ -35,9 +37,9 @@ class FeatureExtractor:
     the baseline model.
     """
 
-    def fit(self,
-            sentences: List[conllu.TokenList],
-            y: np.array = None) -> 'FeatureExtractor':
+    def fit(
+        self, sentences: List[conllu.TokenList], y: np.array = None
+    ) -> "FeatureExtractor":
         return self
 
     def transform(self, sentences: List[conllu.TokenList]) -> np.array:
@@ -53,9 +55,9 @@ class FeatureExtractor:
         np.array
             Array of lists of strings containing the words of the sentences.
         """
-        features = np.zeros(len(sentences), dtype='object')
+        features = np.zeros(len(sentences), dtype="object")
         for i, sentence in enumerate(sentences):
-            features[i] = [word['lemma'] for word in sentence]
+            features[i] = [word["lemma"] for word in sentence]
 
         return features
 
@@ -68,7 +70,7 @@ class Model(base.BaseEstimator):
     training dataset and returning the most frequent tag as a prediction.
     """
 
-    def __init__(self, default_tag: str = 'NOUN') -> None:
+    def __init__(self, default_tag: str = "NOUN") -> None:
         """Constructor
 
         Parameters
@@ -115,11 +117,9 @@ class Model(base.BaseEstimator):
         np.array
             Array of lists of strings containing the predicted tags.
         """
-        pred = np.zeros(len(X), dtype='object')
+        pred = np.zeros(len(X), dtype="object")
         for i, sentence in enumerate(X):
-            tags = [
-                self._word_tag_counter.most_common_tag(w) for w in sentence
-            ]
+            tags = [self._word_tag_counter.most_common_tag(w) for w in sentence]
 
             pred[i] = tags
 

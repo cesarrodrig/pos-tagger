@@ -12,6 +12,7 @@ import click
 import conllu
 import dill  # noqa: F401 This package is joblib.dump works with lambdas
 import joblib
+import numpy as np
 from sklearn import base, pipeline
 import yaml
 
@@ -27,34 +28,52 @@ ModelConfig = Dict[str, Any]
 IGNORE_PARAM_NAMES = {"weights_filename", "checkpoint_basepath"}
 
 
-def build_model_pipeline(model_config: ModelConfig) -> pipeline.Pipeline:
-    """Construct the appropriate pipeline based on the model config.
+def build_and_fit(
+    model_config: ModelConfig,
+    x_train: np.array,
+    y_train: np.array,
+    x_val: np.array,
+    y_val: np.array,
+) -> pipeline.Pipeline:
+    """Construct and fit a model with the given data.config.
 
     Parameters
     ----------
     model_config : ModelConfig
         Dict containing the information about the model. It must contain
         the keys `name` and `params`.
+    x_train : np.array
+        Training samples.
+    y_train : np.array
+        Training labels.
+    x_val : np.array
+        Validation samples.
+    y_val : np.array
+        Validation labels.
 
     Returns
-    -------
+    ------------------
     pipeline.Pipeline
-        Built pipeline that can be used as a model to fit and predict.
+        Pipeline with the fitted model.
 
-    Raises
-    ------
-    TypeError
-        If the model name passed is not recognized.
     """
     name = model_config["name"]
     if name == "baseline":
-        return baseline.build_pipeline(model_config["params"])
-    if name == "hmm_nltk":
-        return hmm.build_nltk_pipeline(model_config["params"])
-    if name == "lstm":
-        return lstm.build_pipeline(model_config["params"])
+        model = baseline.build_pipeline(model_config["params"])
+        model.fit(x_train, y_train)
+
+    elif name == "hmm_nltk":
+        model = hmm.build_nltk_pipeline(model_config["params"])
+        model.fit(x_train, y_train)
+
+    elif name == "lstm":
+        model = lstm.build_pipeline(model_config["params"])
+        model.fit(x_train, y_train, validation_data=(x_val, y_val))
+
     else:
         raise TypeError(f"Model `{name}` not recognized.")
+
+    return model
 
 
 def save_model(
@@ -119,16 +138,15 @@ def train(
     y_train = feature_extraction.extract_tags(train_data)
     y_dev = feature_extraction.extract_tags(dev_data)
 
-    model = build_model_pipeline(model_config)
-
     fit_start = time.time()
 
-    # Leaky abstraction here, ideally the trainer should not care what kind
-    # of model it is training. This is an area of improvement.
-    if model_config["name"] == "lstm":
-        model.fit(train_data, y_train, validation_data=(dev_data, y_dev))
-    else:
-        model.fit(train_data, y_train)
+    model = build_and_fit(
+        model_config=model_config,
+        x_train=train_data,
+        y_train=y_train,
+        x_val=dev_data,
+        y_val=y_dev,
+    )
 
     fit_time = time.time() - fit_start
 

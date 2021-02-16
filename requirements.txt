@@ -1,6 +1,7 @@
 click==7.1.2
 conllu==4.1
 dill==0.3.2
+h5py<3.0.0
 Keras==2.4.3
 nltk==3.5
 numpy==1.19.1
